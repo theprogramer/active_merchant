@@ -23,8 +23,8 @@ module ActiveMerchant #:nodoc:
       def purchase(money, payment, options={})
         options = {type: 'CreditCard'}.merge(options)
         post = {}
-        add_invoice(post, {amount: money})
-        add_payment(post, {card: payment, type: options[:type]})
+        # add_invoice(post, {amount: money})
+        add_payment(post, {card: payment, type: options[:type], amount: money})
         add_customer_data(post, payment, options)
 
         commit(:post, 'sales', post)
@@ -33,8 +33,8 @@ module ActiveMerchant #:nodoc:
       def authorize(money, payment, options={})
         options = {type: 'CreditCard'}.merge(options)
         post = {}
-        add_invoice(post, {amount: money})
-        add_payment(post, {card: payment, type: options[:type]})
+        # add_invoice(post, {amount: money})
+        add_payment(post, {card: payment, type: options[:type], amount: money})
         add_customer_data(post, payment, options)
 
         commit(:post, 'sales', post)
@@ -78,15 +78,14 @@ module ActiveMerchant #:nodoc:
       end
 
       def add_invoice(post, options = {})
-        options = {order_id: '2014111703', amount: 0, installments: 1}.merge(options)
-        post['MerchantOrderId'] = options.dig :order_id
-        post['Payment'] ||= {}
-        post['Payment']['Amount'] = options.dig(:amount).to_i #amount(options.dig(:amount).to_i)
-        post['Payment']['Installments'] = options.dig :installments
       end
 
       def add_payment(post, options = {})
-        options = {descriptor: 'IIGD', card: {}, type: 'CreditCard'}.merge(options)
+        options = {descriptor: 'IIGD', card: {}, type: 'CreditCard', order_id: '2014111703', amount: 0, installments: 1}.merge(options)
+        post['MerchantOrderId'] = options.dig :order_id
+        post['Payment'] ||= {}
+        post['Payment']['Amount'] = options[:type] == 'CreditCard' ? amount(options.dig(:amount).to_i) : options.dig(:amount).to_i
+        post['Payment']['Installments'] = options.dig :installments
         post['Payment']['Type'] = options[:type]
         post['Payment']['ReturnUrl'] = 'http://app.ongrace.com/thanks/'
         post['Payment']['SoftDescriptor'] = options[:descriptor]
