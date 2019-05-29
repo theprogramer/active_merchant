@@ -24,7 +24,7 @@ module ActiveMerchant #:nodoc:
         options = {type: 'CreditCard'}.merge(options)
         post = {}
         add_invoice(post, {amount: money})
-        add_payment(post, {card: payment, type: options.type})
+        add_payment(post, {card: payment, type: options[:type]})
         add_customer_data(post, payment, options)
 
         commit(:post, 'sales', post)
@@ -34,7 +34,7 @@ module ActiveMerchant #:nodoc:
         options = {type: 'CreditCard'}.merge(options)
         post = {}
         add_invoice(post, {amount: money})
-        add_payment(post, {card: payment, type: options.type})
+        add_payment(post, {card: payment, type: options[:type]})
         add_customer_data(post, payment, options)
 
         commit(:post, 'sales', post)
@@ -87,16 +87,16 @@ module ActiveMerchant #:nodoc:
 
       def add_payment(post, options = {})
         options = {descriptor: 'IIGD', card: {}, type: 'CreditCard'}.merge(options)
-        post['Payment']['Type'] = options.type
+        post['Payment']['Type'] = options[:type]
         post['Payment']['ReturnUrl'] = 'http://app.ongrace.com/thanks/'
-        post['Payment']['SoftDescriptor'] = options.descriptor
-        post['Payment']['Authenticate'] = options.type == 'CreditCard' ? false : true
-        post['Payment'][options.type] ||= {}
-        post['Payment'][options.type]['CardNumber'] = options.card.dig :number
-        post['Payment'][options.type]['Holder'] = options.card.dig :name
-        post['Payment'][options.type]['ExpirationDate'] = "#{sprintf('%02d', options.card.dig(:month))}/#{options.card.dig(:year)}"
-        post['Payment'][options.type]['SecurityCode'] = options.card.dig :verification_value
-        post['Payment'][options.type]['Brand'] = 'Visa'
+        post['Payment']['SoftDescriptor'] = options[:descriptor]
+        post['Payment']['Authenticate'] = options[:type] == 'CreditCard' ? false : true
+        post['Payment'][options[:type]] ||= {}
+        post['Payment'][options[:type]]['CardNumber'] = options.dig :card, :number
+        post['Payment'][options[:type]]['Holder'] = options.dig :card, :name
+        post['Payment'][options[:type]]['ExpirationDate'] = "#{sprintf('%02d', options.dig(:card, :month))}/#{options.dig(:card, :year)}"
+        post['Payment'][options[:type]]['SecurityCode'] = options.dig :card, :verification_value
+        post['Payment'][options[:type]]['Brand'] = 'Visa'
       end
 
       def parse(body)
