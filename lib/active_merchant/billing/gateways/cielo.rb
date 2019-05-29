@@ -79,10 +79,10 @@ module ActiveMerchant #:nodoc:
 
       def add_invoice(post, options = {})
         options = {order_id: '2014111703', amount: 0, installments: 1}.merge(options)
-        post['MerchantOrderId'] = options.card.dig :order_id
+        post['MerchantOrderId'] = options.dig :order_id
         post['Payment'] ||= {}
-        post['Payment']['Amount'] = amount(options.card.dig :amount).to_i
-        post['Payment']['Installments'] = options.card.dig :installments
+        post['Payment']['Amount'] = amount(options.dig :amount).to_i
+        post['Payment']['Installments'] = options.dig :installments
       end
 
       def add_payment(post, options = {})
