@@ -21,20 +21,20 @@ module ActiveMerchant #:nodoc:
       end
 
       def purchase(money, payment, options={})
+        options = {type: 'CreditCard'}.merge(options)
         post = {}
-        add_invoice(post, money, options)
-        add_payment(post, payment)
-        # add_address(post, payment, options)
+        add_invoice(post, {amount: money})
+        add_payment(post, {card: payment, type: options.type})
         add_customer_data(post, payment, options)
 
         commit(:post, 'sales', post)
       end
 
       def authorize(money, payment, options={})
+        options = {type: 'CreditCard'}.merge(options)
         post = {}
-        add_invoice(post, money, options)
-        add_payment(post, payment)
-        # add_address(post, payment, options)
+        add_invoice(post, {amount: money})
+        add_payment(post, {card: payment, type: options.type})
         add_customer_data(post, payment, options)
 
         commit(:post, 'sales', post)
@@ -77,22 +77,26 @@ module ActiveMerchant #:nodoc:
       def add_address(post, creditcard, options)
       end
 
-      def add_invoice(post, money, options)
-        post['MerchantOrderId'] = '2014111703'
+      def add_invoice(post, options = {})
+        options = {order_id: '2014111703', amount: 0, installments: 1}.merge(options)
+        post['MerchantOrderId'] = options.card.dig :order_id
         post['Payment'] ||= {}
-        post['Payment']['Type'] = 'CreditCard'
-        post['Payment']['Amount'] = amount(money).to_i
-        post['Payment']['Installments'] = 1
+        post['Payment']['Amount'] = amount(options.card.dig :amount).to_i
+        post['Payment']['Installments'] = options.card.dig :installments
       end
 
-      def add_payment(post, credit_card)
-        post['Payment']['SoftDescriptor'] = '123456789ABCD'
-        post['Payment']['CreditCard'] ||= {}
-        post['Payment']['CreditCard']['CardNumber'] = credit_card.number
-        post['Payment']['CreditCard']['Holder'] = credit_card.name
-        post['Payment']['CreditCard']['ExpirationDate'] = "#{sprintf('%02d', credit_card.month)}/#{credit_card.year}"
-        post['Payment']['CreditCard']['SecurityCode'] = credit_card.verification_value
-        post['Payment']['CreditCard']['Brand'] = 'Visa'
+      def add_payment(post, options = {})
+        options = {descriptor: 'IIGD', card: {}, type: 'CreditCard'}.merge(options)
+        post['Payment']['Type'] = options.type
+        post['Payment']['ReturnUrl'] = 'http://app.ongrace.com/thanks/'
+        post['Payment']['SoftDescriptor'] = options.descriptor
+        post['Payment']['Authenticate'] = options.type == 'CreditCard' ? false : true
+        post['Payment'][options.type] ||= {}
+        post['Payment'][options.type]['CardNumber'] = options.card.dig :number
+        post['Payment'][options.type]['Holder'] = options.card.dig :name
+        post['Payment'][options.type]['ExpirationDate'] = "#{sprintf('%02d', options.card.dig(:month))}/#{options.card.dig(:year)}"
+        post['Payment'][options.type]['SecurityCode'] = options.card.dig :verification_value
+        post['Payment'][options.type]['Brand'] = 'Visa'
       end
 
       def parse(body)
