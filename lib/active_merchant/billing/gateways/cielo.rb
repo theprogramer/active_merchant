@@ -92,10 +92,10 @@ module ActiveMerchant #:nodoc:
         post['Payment']['SoftDescriptor'] = options[:descriptor]
         post['Payment']['Authenticate'] = options[:type] == 'CreditCard' ? false : true
         post['Payment'][options[:type]] ||= {}
-        post['Payment'][options[:type]]['CardNumber'] = options.dig :card, :number
-        post['Payment'][options[:type]]['Holder'] = options.dig :card, :name
-        post['Payment'][options[:type]]['ExpirationDate'] = "#{sprintf('%02d', options.dig(:card, :month))}/#{options.dig(:card, :year)}"
-        post['Payment'][options[:type]]['SecurityCode'] = options.dig :card, :verification_value
+        post['Payment'][options[:type]]['CardNumber'] = options[:card].number
+        post['Payment'][options[:type]]['Holder'] = options[:card].name
+        post['Payment'][options[:type]]['ExpirationDate'] = "#{sprintf('%02d', options[:card].month)}/#{options[:card].year}"
+        post['Payment'][options[:type]]['SecurityCode'] = options[:card].verification_value
         post['Payment'][options[:type]]['Brand'] = 'Visa'
       end
 
