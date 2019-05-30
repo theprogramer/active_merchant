@@ -87,7 +87,7 @@ module ActiveMerchant #:nodoc:
         post['Payment']['Amount'] = options[:type] == 'CreditCard' ? (amount(options.dig(:amount)).to_i*100): options.dig(:amount).to_i
         post['Payment']['Installments'] = options.dig :installments
         post['Payment']['Type'] = options[:type]
-        post['Payment']['ReturnUrl'] = 'http://patrocinadores.ongrace.com/site/appRetorno'
+        post['Payment']['ReturnUrl'] = 'https://p7mld2ajz2.execute-api.sa-east-1.amazonaws.com/dev/api/v1/cielo/donate'
         post['Payment']['SoftDescriptor'] = options[:descriptor]
         post['Payment']['Authenticate'] = options[:type] == 'CreditCard' ? false : true
         post['Payment'][options[:type]] ||= {}
