@@ -84,7 +84,7 @@ module ActiveMerchant #:nodoc:
         options = {descriptor: 'IIGD', card: {}, type: 'CreditCard', order_id: '2014111703', amount: 0, installments: 1}.merge(options)
         post['MerchantOrderId'] = options.dig :order_id
         post['Payment'] ||= {}
-        post['Payment']['Amount'] = options[:type] == 'CreditCard' ? (amount(options.dig(:amount)).to_i*100): options.dig(:amount).to_i
+        post['Payment']['Amount'] = options[:type] == 'CreditCard' ? (amount(options.dig(:amount).to_i*100)).to_i : options.dig(:amount).to_i
         post['Payment']['Installments'] = options.dig :installments
         post['Payment']['Type'] = options[:type]
         if (options[:type] == 'DebitCard')
