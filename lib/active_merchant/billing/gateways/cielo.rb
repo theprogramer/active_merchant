@@ -84,10 +84,10 @@ module ActiveMerchant #:nodoc:
         options = {descriptor: 'IIGD', card: {}, type: 'CreditCard', order_id: '2014111703', amount: 0, installments: 1}.merge(options)
         post['MerchantOrderId'] = options.dig :order_id
         post['Payment'] ||= {}
-        post['Payment']['Amount'] = options[:type] == 'CreditCard' ? amount(options.dig(:amount).to_i) : options.dig(:amount).to_i
+        post['Payment']['Amount'] = options[:type] == 'CreditCard' ? (amount(options.dig(:amount)).to_i*100): options.dig(:amount).to_i
         post['Payment']['Installments'] = options.dig :installments
         post['Payment']['Type'] = options[:type]
-        post['Payment']['ReturnUrl'] = 'http://app.ongrace.com/thanks/'
+        post['Payment']['ReturnUrl'] = 'http://patrocinadores.ongrace.com/site/appRetorno'
         post['Payment']['SoftDescriptor'] = options[:descriptor]
         post['Payment']['Authenticate'] = options[:type] == 'CreditCard' ? false : true
         post['Payment'][options[:type]] ||= {}
