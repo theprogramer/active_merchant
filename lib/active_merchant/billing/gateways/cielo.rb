@@ -88,7 +88,7 @@ module ActiveMerchant #:nodoc:
         post['Payment']['Installments'] = options.dig :installments
         post['Payment']['Type'] = options[:type]
         if (options[:type] == 'DebitCard')
-          post['Payment']['ReturnUrl'] = 'https://p7mld2ajz2.execute-api.sa-east-1.amazonaws.com/dev/api/v1/cielo/redirect'
+          post['Payment']['ReturnUrl'] = 'https://omnipayapi.ongrace.com/api/v1/cielo/redirect'
         end
         post['Payment']['SoftDescriptor'] = options[:descriptor]
         post['Payment']['Authenticate'] = options[:type] == 'CreditCard' ? false : true
