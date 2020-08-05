@@ -41,7 +41,7 @@ module ActiveMerchant #:nodoc:
       end
 
       def capture(money, authorization, options={})
-        commit(:put, "sales/#{authorization}/capture?amount=#{money}", options)
+        commit(:put, "sales/#{authorization}/capture", options)
       end
 
       def refund(money, authorization, options={})
