@@ -92,6 +92,7 @@ module ActiveMerchant #:nodoc:
         end
         post['Payment']['SoftDescriptor'] = options[:descriptor]
         post['Payment']['Authenticate'] = options[:type] == 'CreditCard' ? false : true
+        post['Payment']['Capture'] = options[:type] == 'CreditCard'
         post['Payment'][options[:type]] ||= {}
         post['Payment'][options[:type]]['CardNumber'] = options[:card].number
         post['Payment'][options[:type]]['Holder'] = options[:card].name
